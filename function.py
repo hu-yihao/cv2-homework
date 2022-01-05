@@ -50,6 +50,31 @@ class CardPredictor:
         # 开运算:先进性腐蚀再进行膨胀就叫做开运算。它被用来去除噪声。 cv2.MORPH_OPEN
         img_opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, Matrix)
 
+        # 图片叠加与融合
+        # g (x) = (1 − α)f0 (x) + αf1 (x)   a→（0，1）不同的a值可以实现不同的效果
+        img_opening = cv2.addWeighted(img, 1, img_opening, -1, 0)
+        # cv2.imwrite("tmp/img_opening.jpg", img_opening)
+        # 创建20*20的元素为1的矩阵 开操作，并和img重合
+
+        # Otsu’s二值化
+        ret, img_thresh = cv2.threshold(img_opening, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # Canny 边缘检测
+        # 较大的阈值2用于检测图像中明显的边缘  一般情况下检测的效果不会那么完美，边缘检测出来是断断续续的
+        # 较小的阈值1用于将这些间断的边缘连接起来
+        img_edge = cv2.Canny(img_thresh, 100, 200)
+        cv2.imwrite("tmp/img_edge.jpg", img_edge)
+
+        Matrix = np.ones((4, 19), np.uint8)
+        # 闭运算:先膨胀再腐蚀
+        img_edge1 = cv2.morphologyEx(img_edge, cv2.MORPH_CLOSE, Matrix)
+        # 开运算
+        img_edge2 = cv2.morphologyEx(img_edge1, cv2.MORPH_OPEN, Matrix)
+        cv2.imwrite("tmp/img_xingtai.jpg", img_edge2)
+        return img_edge2, oldimg
+
+
+
+
 
 
 
