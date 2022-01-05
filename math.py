@@ -176,6 +176,7 @@ def img_Transform(car_contours, oldimg, pic_width, pic_hight):
 
     return car_imgs
 
+
 def img_color(card_imgs):
     """
     颜色判断函数
@@ -269,6 +270,41 @@ def img_color(card_imgs):
         else:
             card_imgs[card_index] = card_img[yl:yh, xl:xr] if color != "green" or yl < (yh - yl) // 4 else card_img[
                                                                                                            yl - (
-                                                                                                                   yh - yl) // 4:yh,                                                                                                    xl:xr]
+                                                                                                                       yh - yl) // 4:yh,
+                                                                                                           xl:xr]
     return colors, card_imgs
 
+
+def seperate_card(img, waves):
+    """
+    分离车牌字符
+    """
+    h, w = img.shape
+    part_cards = []
+    i = 0
+    for wave in waves:
+        i = i + 1
+        part_cards.append(img[:, wave[0]:wave[1]])
+        chrpic = img[0:h, wave[0]:wave[1]]
+
+        # 保存分离后的车牌图片
+        cv2.imwrite('tmp/chechar{}.jpg'.format(i), chrpic)
+
+    return part_cards
+
+def seperate_card(img, waves):
+    """
+    分离车牌字符
+    """
+    h, w = img.shape
+    part_cards = []
+    i = 0
+    for wave in waves:
+        i = i + 1
+        part_cards.append(img[:, wave[0]:wave[1]])
+        chrpic = img[0:h, wave[0]:wave[1]]
+
+        # 保存分离后的车牌图片
+        cv2.imwrite('tmp/chechar{}.jpg'.format(i), chrpic)
+
+    return part_cards
