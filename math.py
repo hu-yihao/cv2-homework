@@ -85,3 +85,35 @@ def accurate_place(card_img_hsv, limit1, limit2, color):
             if xr < j:
                 xr = j
     return xl, xr, yh, yl
+
+def img_findContours(img_contours):
+    # 查找轮廓
+    # cv2.findContours()
+    # 有三个参数，第一个是输入图像，第二个是轮廓检索模式，第三个是轮廓近似方法。参数为二值图，即黑白的（不是灰度图）
+    # 返回值有三个，第一个是图像，第二个是轮廓，第三个是（轮廓的）层析结构。
+    # 轮廓（第二个返回值）是一个 Python列表，其中存储这图像中的所有轮廓。
+    # 每一个轮廓都是一个 Numpy 数组，包含对象边界点（x，y）的坐标。
+    contours, hierarchy = cv2.findContours(img_contours, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # cv2.RETR_TREE建立一个等级树结构的轮廓
+    #  cv2.CHAIN_APPROX_SIMPLE压缩水平方向，垂直方向，对角线方向的元素，
+    #  只保留该方向的终点坐标，例如一个矩形轮廓只需4个点来保存轮廓信息
+
+    # cv2.contourArea计算该轮廓的面积
+    contours = [cnt for cnt in contours if cv2.contourArea(cnt) > Min_Area]
+    # print("findContours len = ", len(contours))
+
+    # 面积小的都筛选掉
+    car_contours = []
+    for cnt in contours:
+        ant = cv2.minAreaRect(cnt)  # 得到最小外接矩形的（中心(x,y), (宽,高), 旋转角度）
+        width, height = ant[1]
+        if width < height:
+            width, height = height, width
+        ration = width / height
+
+        if 2 < ration < 5.5:
+            car_contours.append(ant)
+            # box = cv2.boxPoints(ant) # 获得要绘制这个矩形的 4 个角点
+
+    return car_contours
+
