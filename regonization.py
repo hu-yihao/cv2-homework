@@ -85,8 +85,6 @@ color_tr = {
     "blue": ("蓝牌", "#6666FF")
     }
 
-
-
 provinces = [
     "zh_cuan", "川",
     "zh_e", "鄂",
