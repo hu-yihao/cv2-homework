@@ -1,6 +1,9 @@
+import os
 import cv2
+from PIL import Image
 import numpy as np
-from numpy.linalg import norm
+import img_math
+import img_recognition
 
 SZ = 20  # 训练图片长宽
 MAX_WIDTH = 1000  # 原始图片最大宽度
@@ -8,9 +11,45 @@ Min_Area = 2000  # 车牌区域允许最大面积
 PROVINCE_START = 1000
 
 
+class StatModel(object):
+    def load(self, fn):
+        self.model = self.model.load(fn)
+
+    def save(self, fn):
+        self.model.save(fn)
+
+
+class SVM(StatModel):
+    def __init__(self, C=1, gamma=0.5):
+        self.model = cv2.ml.SVM_create()
+        self.model.setGamma(gamma)
+        self.model.setC(C)
+        self.model.setKernel(cv2.ml.SVM_RBF)
+        self.model.setType(cv2.ml.SVM_C_SVC)
+
+    # # 训练svm
+    # def train(self, samples, responses):
+    #     self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
+
+    # 字符识别
+    def predict(self, samples):
+        r = self.model.predict(samples)
+        return r[1].ravel()
+
+
 class CardPredictor:
     def __init__(self):
         pass
+
+    def train_svm(self):
+        # 识别英文字母和数字
+        self.model = SVM(C=1, gamma=0.5)
+        # 识别中文
+        self.modelchinese = SVM(C=1, gamma=0.5)
+        if os.path.exists("svm.dat"):
+            self.model.load("svm.dat")
+        if os.path.exists("svmchinese.dat"):
+            self.modelchinese.load("svmchinese.dat")
 
     def img_first_pre(self, car_pic_file):
         """
@@ -222,11 +261,3 @@ class CardPredictor:
 
         cv2.imwrite("tmp/img_caijian.jpg", roi)
         return predict_str, roi, card_color  # 识别到的字符、定位的车牌图像、车牌颜色
-
-
-
-
-
-
-
-
