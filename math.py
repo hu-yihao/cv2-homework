@@ -269,7 +269,6 @@ def img_color(card_imgs):
         else:
             card_imgs[card_index] = card_img[yl:yh, xl:xr] if color != "green" or yl < (yh - yl) // 4 else card_img[
                                                                                                            yl - (
-                                                                                                                   yh - yl) // 4:yh,
-                                                                                                           xl:xr]
+                                                                                                                   yh - yl) // 4:yh,                                                                                                    xl:xr]
     return colors, card_imgs
 
